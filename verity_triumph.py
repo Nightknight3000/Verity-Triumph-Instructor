@@ -30,25 +30,45 @@ _GEOMETRIC_BODIES_TO_SHAPES = {"cube": "ss",
                                }
 
 
-def main():
+def main(inits: Optional[str] = None,
+         inside: Optional[str] = None,
+         outside: Optional[str] = None) -> None:
+    print(inits, inside, outside)
     skip_str = "===================================================================="
     print(f"{skip_str}\n                      Verity Triumph Instructor                     \n{skip_str}")
 
     last_side = None
-    for i in range(3):
-        print(f"\nRound {i + 1}")
-        print(skip_str)
+    do_manual_input = all(s is None for s in [inits, inside, outside])
+    for i in range(3 if do_manual_input else 1):
+        if do_manual_input:
+            print(f"\nRound {i + 1}")
+            print(skip_str)
+
         # Collect and check init inputs
-        init_inputs = collect_inputs("init")
-        print(skip_str)
+        if do_manual_input:
+            init_inputs = collect_inputs("init")
+            print(skip_str)
+        else:
+            inits = {"init": inits}
+            init_inputs = {"init": await_correct_input("init", _POSSIBLE_INPUTS["init"]["init"], given=inits["init"])}
 
         # Collect and check inside inputs
-        inside_room_inputs = collect_inputs("inside", init_inputs)
-        print(skip_str)
+        if do_manual_input:
+            inside_room_inputs = collect_inputs("inside", init_inputs)
+            print(skip_str)
+        else:
+            inside = {_SIDES[i]: inside.split(',')[i] for i in range(3)}
+            inside_room_inputs = {key: await_correct_input(key, msg, init_input=init_inputs["init"][i], given=inside[key])
+                                  for i, (key, msg) in enumerate(_POSSIBLE_INPUTS["inside"].items())}
 
         # Collect and check inside inputs
-        outside_room_inputs = collect_inputs("outside", init_inputs)
-        print(skip_str)
+        if do_manual_input:
+            outside_room_inputs = collect_inputs("outside", init_inputs)
+            print(skip_str)
+        else:
+            outside = {_SIDES[i]: outside.split(',')[i] for i in range(3)}
+            outside_room_inputs = {key: await_correct_input(key, msg, init_input=init_inputs["init"][i], given=outside[key])
+                                   for i, (key, msg) in enumerate(_POSSIBLE_INPUTS["outside"].items())}
 
         # Double-check if constitution of inputs is valid
         if room_inputs_valid(inside_room_inputs, init_inputs) and room_inputs_valid(outside_room_inputs, init_inputs):
@@ -100,16 +120,18 @@ def room_inputs_valid(inputs: dict[str, str], init_inputs: dict[str, str]) -> bo
     return all(symbol_count_valid) and all(sides_having_init_symbol)
 
 
-def await_correct_input(mode: str, msg: str, init_input: Optional[str] = None) -> str:
+def await_correct_input(mode: str, msg: str, init_input: Optional[str] = None, given: Optional[str] = None) -> str:
     symbols = None
     is_valid = False
     while not is_valid:
-        symbols = input('\t' + msg).lower()
+        symbols = input('\t' + msg).lower() if given is None else given
         if mode == "init":
             if (len(symbols) == 3) and all([s in symbols for s in _VALID_SYMBOLS]):
                 is_valid = True
             else:
                 print(f"\tReceived invalid input for initialization. Retry..")
+                print(symbols)
+                sys.exit()
         else:
             if init_input is not None:
                 if symbols in _GEOMETRIC_BODIES_TO_SHAPES.keys():
@@ -124,6 +146,12 @@ def await_correct_input(mode: str, msg: str, init_input: Optional[str] = None) -
                     else:
                         error_msg = "Inside/Outside rooms always contains their symbol at least once"
                     print(f"\tReceived invalid input for {mode} ({error_msg}). Retry..")
+                    print(symbols)
+                    print((len(symbols) == 2))
+                    print(all([s in _VALID_SYMBOLS for s in symbols]))
+                    print((init_input in symbols))
+                    print(init_input, symbols)
+                    sys.exit()
             else:
                 raise ValueError("Missing correct initial inputs.")
 
