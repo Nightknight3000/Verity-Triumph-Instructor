@@ -33,7 +33,6 @@ _GEOMETRIC_BODIES_TO_SHAPES = {"cube": "ss",
 def main(inits: Optional[str] = None,
          inside: Optional[str] = None,
          outside: Optional[str] = None) -> None:
-    print(inits, inside, outside)
     skip_str = "===================================================================="
     print(f"{skip_str}\n                      Verity Triumph Instructor                     \n{skip_str}")
 
@@ -182,28 +181,30 @@ def swap_strategy(room: Literal["inside", "outside"],
     if room == "inside":
         none_pure = not any([is_pure(i) for i in inputs.values()])
         side_done = {side: False for side in inputs.keys()}
-        # print(f"\t\tInits: ", init_inputs)
-        # print("\t\tbefore: ", inputs)
-        while not all([v for v in side_done.values()]):
+        while not (all([v for v in side_done.values()]) and all([len(inputs[side]) == 2 for side in inputs.keys()])):
             not_done_sides = [k for k in side_done.keys() if not side_done[k]]
             side = last_side if (last_side is not None) and (not side_done[last_side]) else \
-                ("left" if last_side is None else not_done_sides[0])
+                ("left" if last_side is None else (not_done_sides[0] if not_done_sides else last_side))
             if not side_done[side]:
                 shapes = inputs[side][:2]
-                for shape in shapes:
-                    shape_init_side = _SIDES[init_inputs["init"].index(shape)]
-                    possible_sides = [s for s in inputs.keys() if s != side]
-                    remaining_shape = shapes.replace(shape, '', 1)
-                    remaining_shape_init_side = _SIDES[init_inputs["init"].index(remaining_shape)]
-                    for n_side in possible_sides:
-                        remaining_side = [s for s in possible_sides if s != n_side][0]
-                        if (n_side != last_side) and \
-                                (shape_init_side != n_side) and \
-                                (remaining_shape_init_side != remaining_side):
-                            inputs, last_side, step_count, _ = interact_with_statue(room, shape, n_side, inputs,
-                                                                                    step_count, loc_inside=side)
-                            side_done[side] = True
-                            break
+                shapes_on_side_done = {f"{s}_{i}": False for i, s in enumerate(shapes)}
+                while not side_done[side]:
+                    for i, shape in enumerate(shapes):
+                        if not shapes_on_side_done[f"{shape}_{i}"]:
+                            shape_init_side = _SIDES[init_inputs["init"].index(shape)]
+                            possible_sides = [s for s in inputs.keys() if s != side]
+                            remaining_shape = shapes.replace(shape, '', 1)
+                            remaining_shape_init_side = _SIDES[init_inputs["init"].index(remaining_shape)]
+                            for n_side in possible_sides:
+                                remaining_side = [s for s in possible_sides if s != n_side][0]
+                                if (n_side != last_side) and \
+                                        (shape_init_side != n_side) and \
+                                        (remaining_shape_init_side != remaining_side):
+                                    inputs, last_side, step_count, _ = interact_with_statue(room, shape, n_side, inputs,
+                                                                                            step_count, loc_inside=side)
+                                    shapes_on_side_done[f"{shape}_{i}"] = True
+                                    side_done[side] = all([v for v in shapes_on_side_done.values()])
+                                    break
 
         if none_pure:
             for _ in range(3):
@@ -214,11 +215,8 @@ def swap_strategy(room: Literal["inside", "outside"],
                         inputs, last_side, step_count, _ = interact_with_statue(room, shape, n_side, inputs,
                                                                                 step_count, loc_inside=last_side)
                         break
-        # print("\t\tafter: ", inputs)
     else:
         num_pure = sum([is_pure(i) for i in inputs.values()])
-        # print(f"\t\tInits: ", init_inputs)
-        # print("\t\tbefore: ", inputs)
         start_side, other_side1, other_side2 = (None for _ in range(3))
         for s in inputs.keys():
             if (s != last_side) and (start_side is None) and (not is_pure(inputs[s]) if num_pure == 1 else True):
@@ -272,7 +270,6 @@ def swap_strategy(room: Literal["inside", "outside"],
                                                                                  inputs, step_count)
             inputs, _, _, _ = interact_with_statue(room, final_shape2, final_side2, inputs,
                                                    step_count, outside_first_interact=first_interact)
-        # print("\t\tafter: ", {k: _SHAPES_TO_GEOMETRIC_BODIES[v] for k, v in inputs.items()})
     return last_side
 
 
