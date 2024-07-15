@@ -4,21 +4,14 @@ Very simplistic commandline tool, allowing for quick and easy input of observed 
 
 Note, that this tool is by no means perfect, and can probably contain bugs. If so, you may choose to open an **Issue tab** on GitHub at your own convenience.
 
-## Requirements
-This tool is implemented in Python 3, and only uses base-python libraries. Thereby, except for installing Python 3, no further steps need to be taken (technically it doesn't even require pip).
+# Requirements
+This tool has no requirements whatsoever, besides installing Python 3 for the Developer Setup (see at the end).
 
-## Quick Setup
-Download or clone this repository in order to execute it locally on your machine.\
-You may execute the tool via this call on your commandline:
-```
-python verity_triumph.py
-```
-Or directly from within a python shell:
-```
-from verity_triumph import main
-main()
-```
-*Hint: Of course, you need to navigate to the directory containing the script for each.*
+Requirements of the Developer Setup:\
+The tool only uses base-python libraries, thereby necessitating no further steps (technically it doesn't even require pip).
+
+# Quick Setup
+Choose any of the attached releases according to your platform, and follow the given steps [here](https://github.com/Nightknight3000/Verity-Triumph-Instructor/releases).
 
 
 # Execution
@@ -54,6 +47,21 @@ Right outside statue: sc   <- auto-filled
 ```
 *Hint: For all 2-letter-inputs inside and outside, the sequence does not matter (ex. 'st' = 'ts').*
 
+---
+---
+
+### Optional: Developer Setup
+Download or clone this repository in order to execute it locally on your machine.\
+You may execute the tool via this call on your commandline:
+```
+python verity_triumph.py
+```
+Or directly from within a python shell:
+```
+from verity_triumph import main
+main()
+```
+*Hint: Of course, you need to navigate to the directory containing the script for each.*
 
 ## Authors
 * **Nightknight3000** (Bungie-Name: HawkS0UL#2153)
