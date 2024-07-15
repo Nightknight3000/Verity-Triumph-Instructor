@@ -33,12 +33,12 @@ _GEOMETRIC_BODIES_TO_SHAPES = {"cube": "ss",
 def main(inits: Optional[str] = None,
          inside: Optional[str] = None,
          outside: Optional[str] = None) -> None:
-    print(inits, inside, outside)
-    skip_str = "===================================================================="
-    print(f"{skip_str}\n                      Verity Triumph Instructor                     \n{skip_str}")
+    do_manual_input = all(s is None for s in [inits, inside, outside])
+    skip_str = "====================================================================" if do_manual_input else ""
+    if do_manual_input:
+        print(f"{skip_str}\n                      Verity Triumph Instructor                     \n{skip_str}")
 
     last_side = None
-    do_manual_input = all(s is None for s in [inits, inside, outside])
     for i in range(3 if do_manual_input else 1):
         if do_manual_input:
             print(f"\nRound {i + 1}")
@@ -72,14 +72,15 @@ def main(inits: Optional[str] = None,
 
         # Double-check if constitution of inputs is valid
         if room_inputs_valid(inside_room_inputs, init_inputs) and room_inputs_valid(outside_room_inputs, init_inputs):
+            tab_f_string = '\t' if do_manual_input else ''
 
             # Process inside
-            print("\tStarting inside...")
+            print(f"{tab_f_string}Starting inside...")
             last_side = swap_strategy("inside", inside_room_inputs, init_inputs, last_side)
             print()
 
             # Process outside
-            print("\tStarting outside...")
+            print(f"{tab_f_string}Starting outside...")
             last_side = swap_strategy("outside", outside_room_inputs, init_inputs, last_side)
             print(skip_str)
         else:

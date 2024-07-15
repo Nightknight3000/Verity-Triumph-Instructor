@@ -55,28 +55,35 @@ def main():
 
     group_starts = [0, 3, 8]
     for i, category in enumerate(component_groups["text_field"].keys()):
-        tk.Label(mainframe, text=f"{category}s:").grid(column=1, row=group_starts[i], sticky=tk.W)
+        tk.Label(mainframe, text=f"{category}s:").grid(column=0, row=group_starts[i], sticky=tk.W)
         error_field = tk.StringVar(value=f"error{i+1}")  # TODO: Remove inherent error msg
-        tk.Label(mainframe, textvariable=error_field).grid(column=2, row=group_starts[i] + 1, sticky=tk.W)
+        tk.Label(mainframe, textvariable=error_field).grid(column=1, row=group_starts[i] + 1, sticky=tk.W)
         component_groups["error_field"][category] = error_field
         text_field = tk.StringVar(value=component_groups["text_field"][category])
         component_groups["text_field"][category] = text_field
         text_entry = ttk.Entry(mainframe, width=7, textvariable=text_field)
-        text_entry.grid(column=1, row=group_starts[i] + 1, sticky=(tk.W, tk.E))
+        text_entry.grid(column=0, row=group_starts[i] + 1, sticky=(tk.W, tk.E))
         count = 1
         for j, side in enumerate((_SIDES if category != "init" else ["init"])):
             for k, symbol in enumerate(_SYMBOL_MAP.keys()):
                 count += 1
                 button = tk.Button(mainframe, text=symbol)
-                button.grid(column=(j if category != "init" else k)+1,
+                button.grid(column=(j if category != "init" else k),
                             row=group_starts[i]+2+(k if category != "init" else 0),
                             sticky=tk.W)
                 component_groups[f"{category}_button"][side][symbol] = [button, "unselected"]
-                button.config(bg="white",
-                              command=lambda b=button: select_and_execute_button(b, component_groups))
+                button.config(bg="white", command=lambda b=button: select_and_execute_button(b, component_groups))
+
+    tk.Label(mainframe).grid(columnspan=100, row=13, sticky=tk.W)
+    tk.Label(mainframe).grid(columnspan=100, row=14, sticky=tk.W)
     output_field = tk.StringVar(value=f"result")  # TODO: Remove inherent output msg
-    tk.Label(mainframe, textvariable=output_field).grid(column=1, row=13, sticky=tk.W)
+    tk.Label(mainframe, textvariable=output_field, anchor='w').grid(columnspan=100, row=16, sticky=tk.W)
     component_groups["output_field"] = output_field
+
+    run_button = tk.Button(mainframe, text="Run")
+    run_button.grid(column=0, row=15, sticky=tk.W)
+    run_button.config(bg="white", command=lambda b=run_button: check_and_run_calc(component_groups["text_field"],
+                                                                                  component_groups["output_field"]))
 
     for child in mainframe.winfo_children():
         child.grid_configure(padx=5, pady=5)
@@ -153,30 +160,52 @@ def select_and_execute_button(button: tk.Button,
         for b, s in button_group.values():
             if s == "unselected":
                 b.config(state="disabled")
+                if button_group_key == "init":
+                    text_field.set(text_field.get() + _SYMBOL_MAP[b.config().get("text")[4]])
     elif num_selected <= 1:
         for b, s in button_group.values():
             if s == "unselected":
                 b.config(state="normal")
 
-    check_and_run_calc(component_groups["text_field"], component_groups["output_field"])
-
 
 def check_and_run_calc(input_fields: dict[str, tk.StringVar], output_field: tk.StringVar):
     if len(input_fields) == 3:
-        print(input_fields)
         inits, inside, outside = (v.get() for v in input_fields.values())
         print(inits, inside, outside)
-        inits, inside, outside = "tsc", "ts,sc,ct", "ts,sc,ct"
-        # TODO: Validity check
-        _stdout = sys.stdout
-        output = io.StringIO()
-        sys.stdout = output
-        verity_triumph(inits=inits, inside=inside, outside=outside)
-        sys.stdout = _stdout
-        print(sys.stdout)
-        print("second")
-        print(output.getvalue())
-        output_field.set(output.getvalue())
+        if input_valid(inits, inside, outside):
+            _stdout = sys.stdout
+            output = io.StringIO()
+            sys.stdout = output
+            verity_triumph(inits=inits, inside=inside, outside=outside)
+            sys.stdout = _stdout
+            output_field.set(output.getvalue())
+        else:
+            output_field.set('')
+
+
+def input_valid(inits: str, inside: str, outside: str) -> bool:
+    try:
+        inside_left, inside_middle, inside_right = inside.split(',')
+        outside_left, outside_middle, outside_right = outside.split(',')
+
+        # First check: inits valid?
+        inits_valid = (len(inits) == 3) and (all(v in inits for v in _SYMBOL_MAP.values()))
+
+        # Second check: total numbers in side match up each?
+        total_inside = ''.join([inside_left, inside_middle, inside_right])
+        numbers_match_inside = all(total_inside.count(v) == 2 for v in _SYMBOL_MAP.values()) and (len(total_inside) == 6)
+        total_outside = ''.join([outside_left, outside_middle, outside_right])
+        numbers_match_outside = all(total_outside.count(v) == 2 for v in _SYMBOL_MAP.values()) and (len(total_outside) == 6)
+        numbers_match = numbers_match_inside and numbers_match_outside
+
+        # Third check: inits in sides?
+        inits_in_all_inside = all(inits[i] in inside.split(',')[i] for i in range(3))
+        inits_in_all_outside = all(inits[i] in outside.split(',')[i] for i in range(3))
+        inits_in_all = inits_in_all_inside and inits_in_all_outside
+
+        return inits_valid and numbers_match and inits_in_all
+    except:
+        return False
 
 
 if __name__ == "__main__":
