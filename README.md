@@ -5,7 +5,7 @@ Very simplistic commandline tool, allowing for quick and easy input of observed 
 Note, that this tool is by no means perfect, and can probably contain bugs. If so, you may choose to open an **Issue tab** on GitHub at your own convenience.
 
 # Requirements
-This tool has no requirements whatsoever, besides installing Python 3 for the Developer Setup (see at the end).
+This tool has no requirements whatsoever, besides installing Python 3 for the Developer Setup (see [here](https://github.com/Nightknight3000/Verity-Triumph-Instructor#optional-developer-setup)).
 
 Requirements of the Developer Setup:\
 The tool only uses base-python libraries, thereby necessitating no further steps (technically it doesn't even require pip).
