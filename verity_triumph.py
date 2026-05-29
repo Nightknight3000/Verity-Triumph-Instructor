@@ -1,6 +1,7 @@
 import sys
 from typing import Literal, Optional
 
+
 _POSSIBLE_INPUTS = {"init": {"init": "Initial statue inputs: "},
                     "inside": {"left": "Left inside room wall: ",
                                "middle": "Middle inside room wall: ",
@@ -9,8 +10,14 @@ _POSSIBLE_INPUTS = {"init": {"init": "Initial statue inputs: "},
                                 "middle": "Middle outside statue: ",
                                 "right": "Right outside statue: "}
                     }
+
+
 _VALID_SYMBOLS = ["s", "t", "c"]
+
+
 _SIDES = ["left", "middle", "right"]
+
+
 _SHAPES_TO_GEOMETRIC_BODIES = {"ss": "cube",
                                "st": "prism",
                                "sc": "cylinder",
@@ -21,6 +28,8 @@ _SHAPES_TO_GEOMETRIC_BODIES = {"ss": "cube",
                                "ct": "cone",
                                "cc": "sphere",
                                }
+
+
 _GEOMETRIC_BODIES_TO_SHAPES = {"cube": "ss",
                                "prism": "st",
                                "cylinder": "sc",
@@ -129,8 +138,7 @@ def await_correct_input(mode: str, msg: str, init_input: Optional[str] = None, g
                 is_valid = True
             else:
                 print(f"\tReceived invalid input for initialization. Retry..")
-                print(symbols)
-                sys.exit()
+                continue
         else:
             if init_input is not None:
                 if symbols in _GEOMETRIC_BODIES_TO_SHAPES.keys():
@@ -145,12 +153,7 @@ def await_correct_input(mode: str, msg: str, init_input: Optional[str] = None, g
                     else:
                         error_msg = "Inside/Outside rooms always contains their symbol at least once"
                     print(f"\tReceived invalid input for {mode} ({error_msg}). Retry..")
-                    print(symbols)
-                    print((len(symbols) == 2))
-                    print(all([s in _VALID_SYMBOLS for s in symbols]))
-                    print((init_input in symbols))
-                    print(init_input, symbols)
-                    sys.exit()
+                    continue
             else:
                 raise ValueError("Missing correct initial inputs.")
 
