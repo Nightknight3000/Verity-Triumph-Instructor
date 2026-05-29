@@ -5,13 +5,9 @@ Very simplistic commandline tool, allowing for quick and easy input of observed 
 Note, that this tool is by no means perfect, and can probably contain bugs. If so, you may choose to open an **Issue tab** on GitHub at your own convenience.
 
 # Requirements
-This tool has no requirements whatsoever, besides installing Python 3 for the Developer Setup (see [here](https://github.com/Nightknight3000/Verity-Triumph-Instructor#optional-developer-setup)).
+__This tool has no requirements whatsoever, if you run it via the added EXE-file on Windows.__
 
-Requirements of the Developer Setup:\
-The tool only uses base-python libraries, thereby necessitating no further steps (technically it doesn't even require pip).
-
-# Quick Setup
-Choose any of the attached releases according to your platform, and follow the given steps [here](https://github.com/Nightknight3000/Verity-Triumph-Instructor/releases).
+You may download it [here](#TODO) directly.
 
 
 # Execution
@@ -51,7 +47,9 @@ Right outside statue: sc   <- auto-filled
 ---
 
 ### Optional: Developer Setup
-Download or clone this repository in order to execute it locally on your machine.\
+Download or clone this repository in order to execute it locally on your machine.
+### Requirements:
+The tool only uses base-python libraries, thereby necessitating no further steps besides installing Python 3 from [here](https://www.python.org/downloads/windows/) (technically it doesn't even require pip).
 You may execute the tool via this call on your commandline:
 ```
 python verity_triumph.py
