@@ -7,7 +7,7 @@ Note, that this tool is by no means perfect, and can probably contain bugs. If s
 # Requirements
 __This tool has no requirements whatsoever, if you run it via the added EXE-file on Windows.__
 
-You may download it [here](#TODO) directly.
+You may download it [here](https://github.com/Nightknight3000/Verity-Triumph-Instructor/releases/tag/Win1.0) directly.
 
 
 # Execution
